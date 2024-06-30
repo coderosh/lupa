@@ -1,0 +1,89 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --base-color: #1a1b26;
+  --card-color: #24283b;
+  --text-color: #fafafa;
+  --border-color: #414868;
+}
+
+body {
+  background: var(--base-color);
+  color: var(--text-color);
+}
+
+.cm-editor {
+  height: 100%;
+  @apply text-sm;
+}
+
+@property --progress {
+  syntax: "<percentage>";
+  inherits: false;
+  initial-value: 0%;
+}
+
+.progress-bar {
+  border-radius: 50%;
+  background: radial-gradient(
+      closest-side,
+      var(--card-color) 70%,
+      transparent 60% 100%
+    ),
+    conic-gradient(var(--border-color) var(--progress), var(--card-color) 0);
+  animation-name: progress;
+  animation-timing-function: ease-in-out;
+  animation-play-state: running;
+}
+
+@keyframes progress {
+  0% {
+    --progress: 0%;
+  }
+
+  100% {
+    --progress: 100%;
+  }
+}
+
+.grid-container {
+  display: grid;
+  grid-template-areas:
+    "editor callstack callstack callstack callstack webapi"
+    "console eventloop taskqueue taskqueue taskqueue taskqueue"
+    "console eventloop microtaskqueue microtaskqueue microtaskqueue microtaskqueue";
+  gap: 16px;
+  padding: 16px;
+  grid-template-columns: 8fr 1fr 1fr 1fr 1fr 4fr;
+  grid-template-rows: 3fr 1fr 1fr;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: var(--card-color);
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: var(--border-color);
+}
+
+.lupa-block {
+  @apply border-2 border-border rounded-lg pb-2 flex flex-col min-h-0 overflow-hidden font-mono;
+}
+
+.lupa-block-header {
+  @apply p-2 bg-card text-center border-b border-b-border text-sm;
+}

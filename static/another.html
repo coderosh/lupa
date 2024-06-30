@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Lupa - Event Loop Visualizer</title>
+  </head>
+  <body>
+    <div class="h-screen grid-container">
+      <div style="grid-area: editor" class="lupa-block">
+        <div class="lupa-block-header">Editor</div>
+        <div
+          id="code-editor"
+          class="rounded-md row-span-2 relative min-h-0 py-2"
+        >
+          <button
+            id="run-btn"
+            class="absolute rounded-full hover:-translate-y-px transition-transform right-2 top-2 z-50 bg-card p-2 border border-border"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="icon icon-tabler icon-tabler-player-play-filled"
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              stroke-width="1.5"
+              fill="none"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+              <path
+                d="M6 4v16a1 1 0 0 0 1.524 .852l13 -8a1 1 0 0 0 0 -1.704l-13 -8a1 1 0 0 0 -1.524 .852z"
+                stroke-width="0"
+                class="fill-text"
+              />
+            </svg>
+          </button>
+        </div>
+      </div>
+      <div style="grid-area: console" class="lupa-block">
+        <div class="lupa-block-header">console</div>
+        <div id="console" class="overflow-auto flex gap-2 p-2 flex-col"></div>
+      </div>
+
+      <div style="grid-area: callstack" class="lupa-block">
+        <div class="lupa-block-header">Call Stack</div>
+
+        <div
+          id="call-stack"
+          class="flex-col-reverse flex flex-1 gap-2 px-2 pt-2 overflow-auto"
+        ></div>
+      </div>
+      <div style="grid-area: webapi" class="lupa-block">
+        <div class="lupa-block-header">Web APIs</div>
+        <div
+          id="web-api"
+          class="flex flex-col flex-1 gap-2 px-2 pt-2 overflow-auto"
+        ></div>
+      </div>
+
+      <div
+        style="grid-area: eventloop"
+        class="flex items-center justify-center"
+      >
+        <div id="event-loop" class="loader">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="icon stroke-border icon-tabler icon-tabler-refresh -scale-x-100"
+            width="44"
+            height="44"
+            viewBox="0 0 24 24"
+            stroke-width="1.5"
+            fill="none"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+            <path d="M20 11a8.1 8.1 0 0 0 -15.5 -2m-.5 -4v4h4" />
+            <path d="M4 13a8.1 8.1 0 0 0 15.5 2m.5 4v-4h-4" />
+          </svg>
+        </div>
+      </div>
+
+      <div style="grid-area: taskqueue" class="lupa-block">
+        <div class="lupa-block-header">Task Queue</div>
+        <div
+          id="task-queue"
+          class="flex gap-2 overflow-x-auto px-2 pt-2 overflow-y-auto flex-wrap"
+        ></div>
+      </div>
+      <div style="grid-area: microtaskqueue" class="lupa-block">
+        <div class="lupa-block-header">Microtask Queue</div>
+
+        <div
+          id="microtask-queue"
+          class="flex gap-2 overflow-x-auto px-2 pt-2 overflow-y-auto flex-wrap"
+        ></div>
+      </div>
+    </div>
+  </body>
+</html>

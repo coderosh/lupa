@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Lupa - Event Loop Visualizer</title>
+  </head>
+  <body>
+    <div class="h-screen p-2">
+      <div class="flex gap-6 mx-auto p-6 h-full">
+        <div class="grid grid-rows-3 gap-6 flex-1">
+          <div id="code-editor" class="rounded-md border row-span-2 relative">
+            <button
+              id="run-btn"
+              class="absolute -right-2 -top-2 rounded z-50 bg-white p-1 border"
+            >
+              Run
+            </button>
+          </div>
+          <div class="border p-2 rounded-md row-span-1 relative">
+            <span> console </span>
+            <div id="console"></div>
+          </div>
+        </div>
+        <div class="basis-0 flex-1 grid grid-rows-3 gap-6">
+          <div class="flex gap-6 row-span-2 rounded-md">
+            <div class="border flex-1 basis-0 rounded-md p-2 flex flex-col">
+              <span> Call Stack </span>
+
+              <div id="call-stack" class="flex-col-reverse flex flex-1"></div>
+            </div>
+            <div class="border flex-1 basis-0 rounded-md p-2">
+              <span> Web APIs </span>
+              <div id="web-api"></div>
+            </div>
+          </div>
+          <div class="flex row-span-1 gap-6">
+            <div class="flex items-center justify-center p-2 w-16 basis-0">
+              <div id="event-loop" class="loader">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="icon icon-tabler icon-tabler-refresh -scale-x-100"
+                  width="44"
+                  height="44"
+                  viewBox="0 0 24 24"
+                  stroke-width="1.5"
+                  stroke="#2c3e50"
+                  fill="none"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                  <path d="M20 11a8.1 8.1 0 0 0 -15.5 -2m-.5 -4v4h4" />
+                  <path d="M4 13a8.1 8.1 0 0 0 15.5 2m.5 4v-4h-4" />
+                </svg>
+              </div>
+            </div>
+
+            <div class="flex gap-6 flex-col flex-1 basis-0">
+              <div class="border flex-1 basis-0 p-2">
+                Task Queue
+                <div id="task-queue" class="flex gap-2 overflow-x-auto"></div>
+              </div>
+              <div class="border flex-1 basis-0 p-2">
+                Microtask Queue
+
+                <div id="microtask-queue"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
