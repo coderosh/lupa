@@ -1,5 +1,6 @@
 import {
   overrideConsole,
+  overrideQueueMicrotask,
   overrideSetTimeout,
   postMsgCallExpression,
 } from "./codes";
@@ -25,6 +26,8 @@ export function instrumentCode(code: string) {
     ${overrideConsole()}
 
     ${overrideSetTimeout()}
+
+    ${overrideQueueMicrotask()}
 
     ${updatedCode}
   `;

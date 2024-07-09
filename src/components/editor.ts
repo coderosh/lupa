@@ -2,7 +2,6 @@ import { EditorView, basicSetup } from "codemirror";
 import { javascript } from "@codemirror/lang-javascript";
 import { Decoration } from "@codemirror/view";
 import {
-  EditorState,
   StateField,
   StateEffect,
   type Range,
@@ -25,6 +24,10 @@ test(() => {
     setTimeout(() => {
         console.log("from timeout")
     }, 1000)
+
+    queueMicrotask(() => {
+      console.log("Hello World")
+    })
 })
 `.trim();
 

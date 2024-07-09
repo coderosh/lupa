@@ -51,7 +51,7 @@ export const overrideSetTimeout = () => {
     self.setTimeout = (fn, ms) => {
       const key = Date.now()
       postMessage(JSON.stringify({
-          type: "timeout-to-webapi",
+          type: "timeout:enter-webapi",
           timeout: ms,
           key: key,
           fn: fn.name || "anonymous"
@@ -65,7 +65,7 @@ export const overrideSetTimeout = () => {
           ${syncDelay(config.codeDelay)}
 
           postMessage(JSON.stringify({
-              type: "timeout-to-stack",
+              type: "timeout:enter-stack",
               timeout: ms,
               key: key,
               fn: fn.name || "anonymous"
@@ -76,12 +76,52 @@ export const overrideSetTimeout = () => {
           fn()
 
           postMessage(JSON.stringify({
-              type: "timeout-finish",
+              type: "timeout:finish",
               timeout: ms,
               key: key,
               fn: fn.name || "anonymous"
           }))
       }, ms)
+    }
+  `;
+};
+
+export const overrideQueueMicrotask = () => {
+  const config = getConfig();
+  return /* JS */ `
+    const _queueMicrotask = queueMicrotask
+
+    self.queueMicrotask = (fn) => {
+      const key = Date.now()
+
+      postMessage(JSON.stringify({
+        type: "queuemicrotask:enter-microtask",
+        key: key,
+        fn: fn.name || "anonymous"
+      }))
+
+      return _queueMicrotask(() => {
+        postMessage(JSON.stringify({
+          type: "event-loop"
+        }))
+
+        ${syncDelay(config.codeDelay)}
+
+        postMessage(JSON.stringify({
+          type: "queuemicrotask:enter-stack",
+          key: key,
+          fn: fn.name || "anonymous"
+        }))
+
+        ${syncDelay(config.codeDelay)}
+
+        fn()
+
+        postMessage(JSON.stringify({
+          type: "queuemicrotask:finish",
+          key: key,
+        }))
+      })
     }
   `;
 };

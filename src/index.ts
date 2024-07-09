@@ -9,6 +9,7 @@ import CallStack from "./components/call-stack";
 import TaskQueue from "./components/task-queue";
 import EventLoop from "./components/event-loop";
 import { $, execCodeInWorker } from "./utils/helpers";
+import MicroTaskQueue from "./components/microtask-queue";
 
 let worker: Worker;
 
@@ -18,6 +19,7 @@ const callStack = new CallStack();
 const taskQueue = new TaskQueue();
 const eventLoop = new EventLoop();
 const cConsole = new CustomConsole();
+const microTaskQueue = new MicroTaskQueue();
 
 const runBtn = $("#run-btn") as HTMLButtonElement;
 
@@ -60,7 +62,7 @@ runBtn.addEventListener("click", () => {
       return;
     }
 
-    if (data.type === "timeout-to-webapi") {
+    if (data.type === "timeout:enter-webapi") {
       webApi.push(data.key, `timer - ${data.timeout}ms`, data.timeout);
       setTimeout(() => {
         webApi.pop(data.key);
@@ -69,19 +71,37 @@ runBtn.addEventListener("click", () => {
       return;
     }
 
-    if (data.type === "timeout-to-stack") {
+    if (data.type === "timeout:enter-stack") {
       callStack.push(data.key, `${data.fn}()`);
       taskQueue.pop(data.key);
       return;
     }
 
-    if (data.type === "timeout-finish") {
+    if (data.type === "timeout:finish") {
       callStack.pop(data.key);
       return;
     }
 
     if (data.type === "event-loop") {
       eventLoop.animate();
+      return;
+    }
+
+    if (data.type === "queuemicrotask:enter-microtask") {
+      microTaskQueue.push(data.key, `${data.fn}()`);
+      console.log("pushed to microtask");
+
+      return;
+    }
+
+    if (data.type === "queuemicrotask:enter-stack") {
+      microTaskQueue.pop(data.key);
+      callStack.push(data.key, `${data.fn}()`);
+      return;
+    }
+
+    if (data.type === "queuemicrotask:finish") {
+      callStack.pop(data.key);
       return;
     }
   });
