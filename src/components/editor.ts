@@ -19,15 +19,19 @@ function test(fn) {
 }
 
 test(() => {
-    console.log("middle")
+    console.log("callback start")
 
-    setTimeout(() => {
-        console.log("from timeout")
+    setTimeout(function timeoutFn() {
+        console.log("from setTimeout")
     }, 1000)
 
-    queueMicrotask(() => {
-      console.log("Hello World")
+    console.log("callback middle")
+
+    queueMicrotask(function microtaskFn() {
+      console.log("from queueMicrotask")
     })
+
+    console.log("callback start")
 })
 `.trim();
 

@@ -13,11 +13,21 @@ export function instrumentCode(code: string) {
     callExpression: {
       before(node) {
         const callee = instrumentor.stringify(node.callee);
-        return postMsgCallExpression(node.start, node.end, callee, "enter");
+        return postMsgCallExpression(
+          node.start,
+          node.end,
+          callee,
+          "normal:enter-callstack"
+        );
       },
       after(node) {
         const callee = instrumentor.stringify(node.callee);
-        return postMsgCallExpression(node.start, node.end, callee, "exit");
+        return postMsgCallExpression(
+          node.start,
+          node.end,
+          callee,
+          "normal:exit-callstack"
+        );
       },
     },
   });

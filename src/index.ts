@@ -18,7 +18,7 @@ const editor = new Editor();
 const callStack = new CallStack();
 const taskQueue = new TaskQueue();
 const eventLoop = new EventLoop();
-const cConsole = new CustomConsole();
+const customConsole = new CustomConsole();
 const microTaskQueue = new MicroTaskQueue();
 
 const runBtn = $("#run-btn") as HTMLButtonElement;
@@ -27,7 +27,8 @@ runBtn.addEventListener("click", () => {
   webApi.reset();
   callStack.reset();
   taskQueue.reset();
-  cConsole.reset();
+  customConsole.reset();
+  microTaskQueue.reset();
 
   if (worker) {
     worker.terminate();
@@ -41,15 +42,25 @@ runBtn.addEventListener("click", () => {
   worker.addEventListener("message", (e) => {
     const data = JSON.parse(e.data);
 
-    if (data.type === "enter") {
+    if (data.type === "normal:enter-callstack") {
       const key = `${data.start}-${data.end}`;
-      callStack.push(key, originalCode.slice(data.start, data.end));
+
+      let codeToShow = originalCode.slice(data.start, data.end);
+
+      const codeLines = codeToShow.split("\n");
+      if (codeLines.length > 4) {
+        const firstLine = codeLines[0];
+        const lastLine = codeLines[codeLines.length - 1];
+        codeToShow = `${firstLine}\n ...... \n${lastLine}`;
+      }
+
+      callStack.push(key, codeToShow);
 
       editor.highlight(data.start, data.end);
       return;
     }
 
-    if (data.type === "exit") {
+    if (data.type === "normal:exit-callstack") {
       const key = `${data.start}-${data.end}`;
       callStack.pop(key);
 
@@ -58,7 +69,7 @@ runBtn.addEventListener("click", () => {
     }
 
     if (data.type === "console") {
-      cConsole.push(...data.args);
+      customConsole.push(...data.args);
       return;
     }
 

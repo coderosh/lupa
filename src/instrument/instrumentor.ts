@@ -1,5 +1,10 @@
 import { Parser } from "acorn";
-import type { Program, Node, CallExpression } from "acorn";
+import type {
+  Program,
+  Node,
+  CallExpression,
+  ArrowFunctionExpression,
+} from "acorn";
 import { simple } from "acorn-walk";
 import { instrumentCode } from ".";
 
@@ -10,6 +15,7 @@ interface InstrumentFunctions<T = Node> {
 
 interface InstrumentObj {
   callExpression?: InstrumentFunctions<CallExpression>;
+  arrowFunctionExpression?: InstrumentFunctions<ArrowFunctionExpression>;
 }
 
 class CodeIntrumentor {

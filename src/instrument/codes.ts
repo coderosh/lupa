@@ -16,7 +16,7 @@ export const postMsgCallExpression = (
   start: number,
   end: number,
   callee: string,
-  type: "enter" | "exit"
+  type: "normal:enter-callstack" | "normal:exit-callstack"
 ) => {
   const config = getConfig();
   return /* JS */ `
@@ -124,20 +124,4 @@ export const overrideQueueMicrotask = () => {
       })
     }
   `;
-};
-
-export const createCallExpressionWithValue = (
-  before: string,
-  after: string,
-  current: string
-) => {
-  return `
-            (() => {
-              ${before}
-              const __lupa_var = ${current}
-              ${after}
-
-              return __lupa_var
-            })();
-          `;
 };
