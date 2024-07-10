@@ -8,7 +8,7 @@ import CustomConsole from "./components/console";
 import CallStack from "./components/call-stack";
 import TaskQueue from "./components/task-queue";
 import EventLoop from "./components/event-loop";
-import { $, execCodeInWorker, formatCode } from "./utils/helpers";
+import { $, execCodeInWorker } from "./utils/helpers";
 import MicroTaskQueue from "./components/microtask-queue";
 
 let worker: Worker;

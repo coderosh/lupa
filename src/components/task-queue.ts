@@ -1,4 +1,4 @@
-import { $ } from "../utils/helpers";
+import { $, highlightText } from "../utils/helpers";
 
 class TaskQueue {
   private element: HTMLDivElement;
@@ -26,7 +26,7 @@ class TaskQueue {
       "bg-card",
       "text-sm"
     );
-    node.textContent = value;
+    node.innerHTML = highlightText(value);
     this.element.appendChild(node);
 
     this.record[key] = node;

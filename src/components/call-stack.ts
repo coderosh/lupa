@@ -1,4 +1,5 @@
-import { $ } from "../utils/helpers";
+import dedent from "dedent";
+import { $, highlightText } from "../utils/helpers";
 
 class CallStack {
   private element: HTMLDivElement;
@@ -26,7 +27,8 @@ class CallStack {
       "text-xs",
       "overflow-x-auto"
     );
-    node.textContent = value;
+    const newValue = dedent(value);
+    node.innerHTML = highlightText(newValue);
     this.element.appendChild(node);
 
     this.record[key] = node;
