@@ -39,6 +39,8 @@ runBtn.addEventListener("click", async () => {
   const originalCode = editor.getValue();
   const code = instrumentCode(originalCode);
 
+  console.log(code);
+
   worker = execCodeInWorker(code);
 
   worker.addEventListener("message", (e) => {

@@ -15,14 +15,12 @@ export const syncDelay = (ms: number) => {
 export const postMsgCallExpression = (
   start: number,
   end: number,
-  callee: string,
   type: "normal:enter-callstack" | "normal:exit-callstack"
 ) => {
   const config = getConfig();
   return /* JS */ `
     postMessage(JSON.stringify({ 
       type: "${type}",
-      callee: ${callee},
       start: ${start},
       end: ${end}
     }));
@@ -122,6 +120,17 @@ export const overrideQueueMicrotask = () => {
           key: key,
         }))
       })
+    }
+  `;
+};
+
+export const createLupaFn = () => {
+  return /* JS */ `
+   const __lupa_fn = (before, current, after) => {
+      before()
+      const value = current()
+      after()
+      return value
     }
   `;
 };

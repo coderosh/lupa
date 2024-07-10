@@ -1,4 +1,5 @@
 import {
+  createLupaFn,
   overrideConsole,
   overrideQueueMicrotask,
   overrideSetTimeout,
@@ -12,11 +13,9 @@ export function instrumentCode(code: string) {
   const updatedCode = instrumentor.instrument({
     callExpression: {
       before(node) {
-        const callee = instrumentor.stringify(node.callee);
         return postMsgCallExpression(
           node.start,
           node.end,
-          callee,
           "normal:enter-callstack"
         );
       },
@@ -25,7 +24,6 @@ export function instrumentCode(code: string) {
         return postMsgCallExpression(
           node.start,
           node.end,
-          callee,
           "normal:exit-callstack"
         );
       },
@@ -33,6 +31,8 @@ export function instrumentCode(code: string) {
   });
 
   return `
+    ${createLupaFn()}
+    
     ${overrideConsole()}
 
     ${overrideSetTimeout()}

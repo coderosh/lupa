@@ -6,7 +6,6 @@ import type {
   ArrowFunctionExpression,
 } from "acorn";
 import { simple } from "acorn-walk";
-import { instrumentCode } from ".";
 
 interface InstrumentFunctions<T = Node> {
   after?: (node: T) => string;
@@ -36,14 +35,9 @@ class CodeIntrumentor {
         const beforeCode = insObj.callExpression?.before?.(node) ?? "";
         const afterCode = insObj.callExpression?.after?.(node) ?? "";
 
-        that.replace(
-          node,
-          that.getReplaceStringForCallExpression(
-            beforeCode,
-            currentStr,
-            afterCode
-          )
-        );
+        const finalCode = `__lupa_fn(() => { ${beforeCode} }, () => ${currentStr}, () => { ${afterCode} })`;
+
+        that.replace(node, finalCode);
       },
     });
 
@@ -60,24 +54,6 @@ class CodeIntrumentor {
     for (let i = node.start + 1; i < node.end; i++) {
       this.chunks[i] = "";
     }
-  }
-
-  private getReplaceStringForCallExpression(
-    before: string,
-    current: string,
-    after: string
-  ) {
-    return /* JS */ `
-      (() => {
-        ${before}
-
-        const __lupa_var = ${current}
-
-        ${after}
-
-        return __lupa_var
-      })()
-    `;
   }
 }
 
