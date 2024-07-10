@@ -8,7 +8,7 @@ import CustomConsole from "./components/console";
 import CallStack from "./components/call-stack";
 import TaskQueue from "./components/task-queue";
 import EventLoop from "./components/event-loop";
-import { $, execCodeInWorker } from "./utils/helpers";
+import { $, execCodeInWorker, formatCode } from "./utils/helpers";
 import MicroTaskQueue from "./components/microtask-queue";
 
 let worker: Worker;
@@ -23,7 +23,7 @@ const microTaskQueue = new MicroTaskQueue();
 
 const runBtn = $("#run-btn") as HTMLButtonElement;
 
-runBtn.addEventListener("click", () => {
+runBtn.addEventListener("click", async () => {
   webApi.reset();
   callStack.reset();
   taskQueue.reset();
@@ -33,6 +33,8 @@ runBtn.addEventListener("click", () => {
   if (worker) {
     worker.terminate();
   }
+
+  await editor.format();
 
   const originalCode = editor.getValue();
   const code = instrumentCode(originalCode);

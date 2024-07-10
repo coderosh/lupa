@@ -23,6 +23,7 @@
     "@uiw/codemirror-themes-all": "^4.22.2",
     "acorn": "^8.12.0",
     "acorn-walk": "^8.3.3",
-    "codemirror": "^6.0.1"
+    "codemirror": "^6.0.1",
+    "prettier": "^3.3.2"
   }
 }

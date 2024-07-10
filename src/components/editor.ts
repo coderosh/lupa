@@ -9,7 +9,7 @@ import {
 } from "@codemirror/state";
 
 import { tokyoNight } from "@uiw/codemirror-themes-all";
-import { $ } from "../utils/helpers";
+import { $, formatCode } from "../utils/helpers";
 
 const defaultCode = /* JS */ `
 function test(fn) {
@@ -54,6 +54,7 @@ class Editor {
     });
 
     this.setValue(defaultCode);
+    this.format();
   }
 
   setValue(value: string) {
@@ -68,6 +69,11 @@ class Editor {
 
   getValue() {
     return this.editor.state.doc.toString();
+  }
+
+  async format() {
+    const formatted = this.getValue();
+    this.setValue(await formatCode(formatted));
   }
 
   highlight(start: number, end: number) {

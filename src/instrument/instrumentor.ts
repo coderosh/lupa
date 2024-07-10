@@ -76,7 +76,7 @@ class CodeIntrumentor {
         ${after}
 
         return __lupa_var
-      })();
+      })()
     `;
   }
 }
