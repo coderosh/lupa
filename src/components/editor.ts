@@ -1,15 +1,15 @@
-import { EditorView, basicSetup } from "codemirror";
-import { javascript } from "@codemirror/lang-javascript";
-import { Decoration } from "@codemirror/view";
+import { javascript } from '@codemirror/lang-javascript';
 import {
-  StateField,
-  StateEffect,
   type Range,
+  StateEffect,
   type StateEffectType,
-} from "@codemirror/state";
+  StateField,
+} from '@codemirror/state';
+import { Decoration } from '@codemirror/view';
+import { EditorView, basicSetup } from 'codemirror';
 
-import { tokyoNight } from "@uiw/codemirror-themes-all";
-import { $, formatCode } from "../utils/helpers";
+import { tokyoNight } from '@uiw/codemirror-themes-all';
+import { $, formatCode } from '../utils/helpers';
 
 const defaultCode = /* JS */ `
 function test(fn) {
@@ -39,7 +39,7 @@ class Editor {
   private editor: EditorView;
   private highlightEffect!: StateEffectType<Range<Decoration>[]>;
 
-  constructor(parentSel = "#code-editor") {
+  constructor(parentSel = '#code-editor') {
     const parent = $(parentSel);
 
     if (!parent) {
@@ -79,7 +79,7 @@ class Editor {
   highlight(start: number, end: number) {
     const dec = Decoration.mark({
       attributes: {
-        class: "rounded-sm bg-card border-border border",
+        class: 'rounded-sm bg-card border-border border',
       },
     });
 

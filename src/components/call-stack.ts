@@ -1,31 +1,31 @@
-import dedent from "dedent";
-import { $, highlightText } from "../utils/helpers";
+import dedent from 'dedent';
+import { $, highlightText } from '../utils/helpers';
 
 class CallStack {
   private element: HTMLDivElement;
   private record!: Record<string, HTMLElement>;
 
   constructor() {
-    this.element = $("#call-stack") as HTMLDivElement;
+    this.element = $('#call-stack') as HTMLDivElement;
     this.reset();
   }
 
   reset() {
-    this.element.innerHTML = "";
+    this.element.innerHTML = '';
     this.record = {};
   }
 
   push(key: string, value: string) {
-    const node = document.createElement("pre");
+    const node = document.createElement('pre');
     node.classList.add(
-      "border",
-      "border-border",
-      "p-2",
-      "font-mono",
-      "bg-card",
-      "rounded-md",
-      "text-xs",
-      "overflow-x-auto"
+      'border',
+      'border-border',
+      'p-2',
+      'font-mono',
+      'bg-card',
+      'rounded-md',
+      'text-xs',
+      'overflow-x-auto',
     );
     const newValue = dedent(value);
     node.innerHTML = highlightText(newValue);

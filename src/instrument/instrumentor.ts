@@ -1,11 +1,11 @@
-import { Parser } from "acorn";
+import { Parser } from 'acorn';
 import type {
-  Program,
-  Node,
-  CallExpression,
   ArrowFunctionExpression,
-} from "acorn";
-import { simple } from "acorn-walk";
+  CallExpression,
+  Node,
+  Program,
+} from 'acorn';
+import { simple } from 'acorn-walk';
 
 interface InstrumentFunctions<T = Node> {
   after?: (node: T) => string;
@@ -22,8 +22,8 @@ class CodeIntrumentor {
   private chunks: string[];
 
   constructor(public code: string) {
-    this.chunks = code.split("");
-    this.root = Parser.parse(code, { ecmaVersion: "latest", locations: true });
+    this.chunks = code.split('');
+    this.root = Parser.parse(code, { ecmaVersion: 'latest', locations: true });
   }
 
   instrument(insObj: InstrumentObj) {
@@ -32,8 +32,8 @@ class CodeIntrumentor {
       CallExpression(node) {
         const currentStr = that.stringify(node);
 
-        const beforeCode = insObj.callExpression?.before?.(node) ?? "";
-        const afterCode = insObj.callExpression?.after?.(node) ?? "";
+        const beforeCode = insObj.callExpression?.before?.(node) ?? '';
+        const afterCode = insObj.callExpression?.after?.(node) ?? '';
 
         const finalCode = `__lupa_fn(() => { ${beforeCode} }, () => ${currentStr}, () => { ${afterCode} })`;
 
@@ -41,18 +41,18 @@ class CodeIntrumentor {
       },
     });
 
-    return this.chunks.join("");
+    return this.chunks.join('');
   }
 
   public stringify(node: Node) {
-    return this.chunks.slice(node.start, node.end).join("");
+    return this.chunks.slice(node.start, node.end).join('');
   }
 
   public replace(node: Node, str: string) {
     this.chunks[node.start] = str;
 
     for (let i = node.start + 1; i < node.end; i++) {
-      this.chunks[i] = "";
+      this.chunks[i] = '';
     }
   }
 }

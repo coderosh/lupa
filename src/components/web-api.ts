@@ -1,31 +1,31 @@
-import { $ } from "../utils/helpers";
+import { $ } from '../utils/helpers';
 
 class WebApi {
   private element: HTMLDivElement;
   private record!: Record<string, HTMLElement>;
 
   constructor() {
-    this.element = $("#web-api") as HTMLDivElement;
+    this.element = $('#web-api') as HTMLDivElement;
     this.reset();
   }
 
   reset() {
-    this.element.innerHTML = "";
+    this.element.innerHTML = '';
     this.record = {};
   }
 
   push(key: string, value: string, timeout: number) {
-    const node = document.createElement("div");
+    const node = document.createElement('div');
     node.classList.add(
-      "border",
-      "border-border",
-      "p-2",
-      "my-2",
-      "flex",
-      "items-center",
-      "gap-2",
-      "bg-card",
-      "rounded-md"
+      'border',
+      'border-border',
+      'p-2',
+      'my-2',
+      'flex',
+      'items-center',
+      'gap-2',
+      'bg-card',
+      'rounded-md',
     );
     node.innerHTML = /* HTML */ `
       <div

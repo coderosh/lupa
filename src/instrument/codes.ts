@@ -1,4 +1,5 @@
-import getConfig from "../utils/get-config";
+import { events } from '../utils/constants';
+import getConfig from '../utils/get-config';
 
 export const syncDelay = (ms: number) => {
   return /* JS */ `
@@ -15,7 +16,7 @@ export const syncDelay = (ms: number) => {
 export const postMsgCallExpression = (
   start: number,
   end: number,
-  type: "normal:enter-callstack" | "normal:exit-callstack"
+  type: string,
 ) => {
   const config = getConfig();
   return /* JS */ `
@@ -33,7 +34,7 @@ export const overrideConsole = () => {
   return /* JS */ `
     console.log = (...args) => {
       postMessage(JSON.stringify({
-          type: "console",
+          type: "${events.CONSOLE_LOG}",
           args: args,
       }))
     }
@@ -49,7 +50,7 @@ export const overrideSetTimeout = () => {
     self.setTimeout = (fn, ms) => {
       const key = Date.now()
       postMessage(JSON.stringify({
-          type: "timeout:enter-webapi",
+          type: "${events.TIMEOUT_ENTER_WEBAPI}",
           timeout: ms,
           key: key,
           fn: fn.name || "anonymous"
@@ -57,13 +58,13 @@ export const overrideSetTimeout = () => {
 
       return _setTimeout(() => {
           postMessage(JSON.stringify({
-              type: "event-loop",
+              type: "${events.EVENT_LOOP}",
           }))
 
           ${syncDelay(config.codeDelay)}
 
           postMessage(JSON.stringify({
-              type: "timeout:enter-stack",
+              type: "${events.TIMEOUT_ENTER_STACK}",
               timeout: ms,
               key: key,
               fn: fn.name || "anonymous"
@@ -74,7 +75,7 @@ export const overrideSetTimeout = () => {
           fn()
 
           postMessage(JSON.stringify({
-              type: "timeout:finish",
+              type: "${events.TIMEOUT_FINISH}",
               timeout: ms,
               key: key,
               fn: fn.name || "anonymous"
@@ -93,20 +94,20 @@ export const overrideQueueMicrotask = () => {
       const key = Date.now()
 
       postMessage(JSON.stringify({
-        type: "queuemicrotask:enter-microtask",
+        type: "${events.QUEUEMICROTASK_ENTER_MICROTASK}",
         key: key,
         fn: fn.name || "anonymous"
       }))
 
       return _queueMicrotask(() => {
         postMessage(JSON.stringify({
-          type: "event-loop"
+          type: "${events.EVENT_LOOP}"
         }))
 
         ${syncDelay(config.codeDelay)}
 
         postMessage(JSON.stringify({
-          type: "queuemicrotask:enter-stack",
+          type: "${events.QUEUEMICROTASK_ENTER_STACK}",
           key: key,
           fn: fn.name || "anonymous"
         }))
@@ -116,7 +117,7 @@ export const overrideQueueMicrotask = () => {
         fn()
 
         postMessage(JSON.stringify({
-          type: "queuemicrotask:finish",
+          type: "${events.QUEUEMICROTASK_FINISH}",
           key: key,
         }))
       })

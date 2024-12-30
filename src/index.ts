@@ -1,17 +1,19 @@
-import "./index.css";
+import './index.css';
 
-import { instrumentCode } from "./instrument";
+import { instrumentCode } from './instrument';
 
-import WebApi from "./components/web-api";
-import Editor from "./components/editor";
-import CustomConsole from "./components/console";
-import CallStack from "./components/call-stack";
-import TaskQueue from "./components/task-queue";
-import EventLoop from "./components/event-loop";
-import { $, execCodeInWorker } from "./utils/helpers";
-import MicroTaskQueue from "./components/microtask-queue";
+import CallStack from './components/call-stack';
+import CustomConsole from './components/console';
+import Editor from './components/editor';
+import EventLoop from './components/event-loop';
+import MicroTaskQueue from './components/microtask-queue';
+import TaskQueue from './components/task-queue';
+import WebApi from './components/web-api';
+import { events } from './utils/constants';
+import { CodeExecutor } from './utils/executor';
+import { $ } from './utils/helpers';
 
-let worker: Worker;
+let codeExecutor: CodeExecutor;
 
 const webApi = new WebApi();
 const editor = new Editor();
@@ -21,17 +23,17 @@ const eventLoop = new EventLoop();
 const customConsole = new CustomConsole();
 const microTaskQueue = new MicroTaskQueue();
 
-const runBtn = $("#run-btn") as HTMLButtonElement;
+const runBtn = $('#run-btn') as HTMLButtonElement;
 
-runBtn.addEventListener("click", async () => {
+runBtn.addEventListener('click', async () => {
   webApi.reset();
   callStack.reset();
   taskQueue.reset();
   customConsole.reset();
   microTaskQueue.reset();
 
-  if (worker) {
-    worker.terminate();
+  if (codeExecutor) {
+    codeExecutor.terminate();
   }
 
   await editor.format();
@@ -41,83 +43,67 @@ runBtn.addEventListener("click", async () => {
 
   console.log(code);
 
-  worker = execCodeInWorker(code);
+  codeExecutor = new CodeExecutor(code);
 
-  worker.addEventListener("message", (e) => {
-    const data = JSON.parse(e.data);
+  codeExecutor.on(events.CONSOLE_LOG, (data) => {
+    customConsole.push(...data.args);
+  });
 
-    if (data.type === "normal:enter-callstack") {
-      const key = `${data.start}-${data.end}`;
+  codeExecutor.on(events.FN_ENTER_CALLSTACK, (data) => {
+    const key = `${data.start}-${data.end}`;
 
-      let codeToShow = originalCode.slice(data.start, data.end);
+    let codeToShow = originalCode.slice(data.start, data.end);
 
-      const codeLines = codeToShow.split("\n");
-      if (codeLines.length > 4) {
-        const firstLine = codeLines[0];
-        const lastLine = codeLines[codeLines.length - 1];
-        codeToShow = `${firstLine}\n ...... \n${lastLine}`;
-      }
-
-      callStack.push(key, codeToShow);
-
-      editor.highlight(data.start, data.end);
-      return;
+    const codeLines = codeToShow.split('\n');
+    if (codeLines.length > 4) {
+      const firstLine = codeLines[0];
+      const lastLine = codeLines[codeLines.length - 1];
+      codeToShow = `${firstLine}\n ...... \n${lastLine}`;
     }
 
-    if (data.type === "normal:exit-callstack") {
-      const key = `${data.start}-${data.end}`;
-      callStack.pop(key);
+    callStack.push(key, codeToShow);
 
-      editor.removeHighlight();
-      return;
-    }
+    editor.highlight(data.start, data.end);
+  });
 
-    if (data.type === "console") {
-      customConsole.push(...data.args);
-      return;
-    }
+  codeExecutor.on(events.FN_EXIT_CALLSTACK, (data) => {
+    const key = `${data.start}-${data.end}`;
+    callStack.pop(key);
 
-    if (data.type === "timeout:enter-webapi") {
-      webApi.push(data.key, `timer - ${data.timeout}ms`, data.timeout);
-      setTimeout(() => {
-        webApi.pop(data.key);
-        taskQueue.push(data.key, `${data.fn}()`);
-      }, data.timeout);
-      return;
-    }
+    editor.removeHighlight();
+  });
 
-    if (data.type === "timeout:enter-stack") {
-      callStack.push(data.key, `${data.fn}()`);
-      taskQueue.pop(data.key);
-      return;
-    }
+  codeExecutor.on(events.TIMEOUT_ENTER_WEBAPI, (data) => {
+    webApi.push(data.key, `timer - ${data.timeout}ms`, data.timeout);
+    setTimeout(() => {
+      webApi.pop(data.key);
+      taskQueue.push(data.key, `${data.fn}()`);
+    }, data.timeout);
+  });
 
-    if (data.type === "timeout:finish") {
-      callStack.pop(data.key);
-      return;
-    }
+  codeExecutor.on(events.TIMEOUT_ENTER_STACK, (data) => {
+    callStack.push(data.key, `${data.fn}()`);
+    taskQueue.pop(data.key);
+  });
 
-    if (data.type === "event-loop") {
-      eventLoop.animate();
-      return;
-    }
+  codeExecutor.on(events.TIMEOUT_FINISH, (data) => {
+    callStack.pop(data.key);
+  });
 
-    if (data.type === "queuemicrotask:enter-microtask") {
-      microTaskQueue.push(data.key, `${data.fn}()`);
-      console.log("pushed to microtask");
+  codeExecutor.on(events.EVENT_LOOP, () => {
+    eventLoop.animate();
+  });
 
-      return;
-    }
+  codeExecutor.on(events.QUEUEMICROTASK_ENTER_STACK, (data) => {
+    microTaskQueue.pop(data.key);
+    callStack.push(data.key, `${data.fn}()`);
+  });
 
-    if (data.type === "queuemicrotask:enter-stack") {
-      microTaskQueue.pop(data.key);
-      callStack.push(data.key, `${data.fn}()`);
-      return;
-    }
+  codeExecutor.on(events.QUEUEMICROTASK_FINISH, (data) => {
+    callStack.pop(data.key);
+  });
 
-    if (data.type === "queuemicrotask:finish") {
-      callStack.pop(data.key);
-      return;
-    }
+  codeExecutor.on(events.QUEUEMICROTASK_ENTER_MICROTASK, (data) => {
+    microTaskQueue.push(data.key, `${data.fn}()`);
   });
 });

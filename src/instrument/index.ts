@@ -1,11 +1,12 @@
+import { events } from '../utils/constants';
 import {
   createLupaFn,
   overrideConsole,
   overrideQueueMicrotask,
   overrideSetTimeout,
   postMsgCallExpression,
-} from "./codes";
-import CodeIntrumentor from "./instrumentor";
+} from './codes';
+import CodeIntrumentor from './instrumentor';
 
 export function instrumentCode(code: string) {
   const instrumentor = new CodeIntrumentor(code);
@@ -16,7 +17,7 @@ export function instrumentCode(code: string) {
         return postMsgCallExpression(
           node.start,
           node.end,
-          "normal:enter-callstack"
+          events.FN_ENTER_CALLSTACK,
         );
       },
       after(node) {
@@ -24,7 +25,7 @@ export function instrumentCode(code: string) {
         return postMsgCallExpression(
           node.start,
           node.end,
-          "normal:exit-callstack"
+          events.FN_EXIT_CALLSTACK,
         );
       },
     },
